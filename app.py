@@ -104,3 +104,4 @@ if arquivos_disponiveis:
 else:
     st.warning(f" Nenhuma planilha foi encontrada na pasta `{PASTA_DADOS}`.")
     st.info(" Coloque suas planilhas de Logística Reversa (.xlsx) dentro da pasta para que apareçam aqui automaticamente.")
+    
