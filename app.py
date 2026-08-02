@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-PASTA_DADOS = r"./Bash do trabalho/Logistica reversa"
+PASTA_DADOS = r"./Logistica Reversa"
 
 if not os.path.exists(PASTA_DADOS):
     os.makedirs(PASTA_DADOS)
