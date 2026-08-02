@@ -120,13 +120,3 @@ else:
     st.warning(f" Nenhuma planilha foi encontrada na pasta `{PASTA_DADOS}`.")
     st.info(" Coloque suas planilhas de Logística Reversa (.xlsx) dentro da pasta para que apareçam aqui automaticamente.")
     
-except Exception as e:
-            # Isso vai exibir a mensagem REAL do erro na tela do Streamlit!
-            st.error(f"❌ Erro ao tentar abrir o arquivo *{arquivo}*:")
-            st.code(str(e))
-else:
-<<<<<<< HEAD
-    st.error(f"A pasta '{caminho_pasta}' não foi encontrada.")
-=======
-    st.error(f"A pasta '{caminho_pasta}' não foi encontrada.")
->>>>>>> 6e74a954311a62a419aa91afb3673e3289e171fc
