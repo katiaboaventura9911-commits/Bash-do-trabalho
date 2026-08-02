@@ -2,8 +2,23 @@ import os
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+caminho_pasta = "./Logistica-Reversa"
 
-PASTA_DADOS = r"./Logistica-Reversa"
+if os.path.exists(caminho_pasta):
+    arquivos = [f for f in os.listdir(caminho_pasta) if not f.startswith('.')]
+    
+    st.write("📁 *Arquivos encontrados na pasta:*", arquivos)
+    
+    for arquivo in arquivos:
+        caminho_completo = os.path.join(caminho_pasta, arquivo)
+        
+        try:
+            # Tenta abrir o arquivo
+            xls = pd.ExcelFile(caminho_completo, engine='openpyxl')
+            st.success(f"✅ Arquivo lido com sucesso: {arquivo}")
+        except Exception as e:
+            st.error(f"❌ Erro ao ler o arquivo {arquivo}: {e}")
+
 
 if not os.path.exists(PASTA_DADOS):
     os.makedirs(PASTA_DADOS)
@@ -104,3 +119,10 @@ if arquivos_disponiveis:
 else:
     st.warning(f" Nenhuma planilha foi encontrada na pasta `{PASTA_DADOS}`.")
     st.info(" Coloque suas planilhas de Logística Reversa (.xlsx) dentro da pasta para que apareçam aqui automaticamente.")
+    
+except Exception as e:
+            # Isso vai exibir a mensagem REAL do erro na tela do Streamlit!
+            st.error(f"❌ Erro ao tentar abrir o arquivo *{arquivo}*:")
+            st.code(str(e))
+else:
+    st.error(f"A pasta '{caminho_pasta}' não foi encontrada.")
