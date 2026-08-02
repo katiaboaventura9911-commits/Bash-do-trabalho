@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-PASTA_DADOS = r"C:/Users/User/Desktop/Automação do trabalho/Bash do trabalho/Logistica reversa"
+PASTA_DADOS = r"./Bash do trabalho/Logistica reversa"
 
 if not os.path.exists(PASTA_DADOS):
     os.makedirs(PASTA_DADOS)
@@ -104,4 +104,3 @@ if arquivos_disponiveis:
 else:
     st.warning(f" Nenhuma planilha foi encontrada na pasta `{PASTA_DADOS}`.")
     st.info(" Coloque suas planilhas de Logística Reversa (.xlsx) dentro da pasta para que apareçam aqui automaticamente.")
-    
