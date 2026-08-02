@@ -3,23 +3,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 caminho_pasta = "./Logistica-Reversa"
-
-if os.path.exists(caminho_pasta):
-    arquivos = [f for f in os.listdir(caminho_pasta) if not f.startswith('.')]
-    
-    st.write("📁 *Arquivos encontrados na pasta:*", arquivos)
-    
-    for arquivo in arquivos:
-        caminho_completo = os.path.join(caminho_pasta, arquivo)
-        
-        try:
-            # Tenta abrir o arquivo
-            xls = pd.ExcelFile(caminho_completo, engine='openpyxl')
-            st.success(f"✅ Arquivo lido com sucesso: {arquivo}")
-        except Exception as e:
-            st.error(f"❌ Erro ao ler o arquivo {arquivo}: {e}")
-
-
 if not os.path.exists(PASTA_DADOS):
     os.makedirs(PASTA_DADOS)
 
