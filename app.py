@@ -125,4 +125,8 @@ except Exception as e:
             st.error(f"❌ Erro ao tentar abrir o arquivo *{arquivo}*:")
             st.code(str(e))
 else:
+<<<<<<< HEAD
     st.error(f"A pasta '{caminho_pasta}' não foi encontrada.")
+=======
+    st.error(f"A pasta '{caminho_pasta}' não foi encontrada.")
+>>>>>>> 6e74a954311a62a419aa91afb3673e3289e171fc
