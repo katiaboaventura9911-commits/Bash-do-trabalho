@@ -3,6 +3,11 @@ from pathlib import Path
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
+PASTA_DADOS = "./Logistica-Reversa"
+if not os.path.exists(PASTA_DADOS):
+    os.makedirs(PASTA_DADOS)
+
 
 # Configuração da página
 st.set_page_config(
@@ -148,5 +153,7 @@ if lista_arquivos:
         st.error(f"Erro ao abrir o arquivo: {e}")
 
 else:
-    st.warning("⚠️ Nenhum arquivo Excel (.xlsx, .xls) ou CSV foi localizado no diretório.")
+    st.warning(f"⚠️ Nenhuma planilha foi encontrada na pasta `{PASTA_DADOS}`.")
     st.info("💡 **Dica:** Copie o caminho exato da pasta onde seus arquivos estão salvos e cole na caixa de texto na barra lateral esquerda.")
+    st.info("Coloque suas planilhas de Logística Reversa (.xlsx) dentro da pasta para que apareçam aqui automaticamente.")
+
