@@ -4,6 +4,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+PASTA_DADOS = "./dados"
+
 # Configuração da página
 st.set_page_config(
     page_title="Portal de Logística Reversa",
@@ -15,30 +17,23 @@ st.title("📂 Portal de Logística Reversa - Central de Arquivos")
 st.caption("Varredura automática e geração de dashboards a partir de planilhas Excel e arquivos CSV.")
 st.markdown("---")
 
-# ---------------------------------------------------------
-# 1. CAMINHO DA PASTA ONDE FICAM OS ARQUIVOS
-# ---------------------------------------------------------
-# Você pode alterar a pasta padrão abaixo ou mudar pela barra lateral no navegador
-PASTA_PADRAO = r"C:\Users\User\Desktop\Automação do trabalho\Bash do trabalho\Logistica-Reversa"
-
-st.sidebar.header("⚙️ Configurações da Pasta")
-
-# Campo interativo para indicar ou trocar o caminho da pasta
-caminho_digitado = st.sidebar.text_input("Caminho completo da pasta:", value=PASTA_PADRAO)
-pasta_path = Path(caminho_digitado).resolve()
+# Verifica se a pasta existe
+pasta_path = Path(PASTA_DADOS)
 
 # Feedback sobre a existência da pasta
+st.sidebar.header("📁 Configurações da Pasta")
+st.sidebar.write(f"**Caminho completo da pasta:**  \n`{PASTA_DADOS}`")
+
 if pasta_path.exists() and pasta_path.is_dir():
-    st.sidebar.success(f"✅ Pasta conectada:\n`{pasta_path}`")
+    st.sidebar.success(f"✅ Pasta conectada:\n`{pasta_path.absolute()}`")
 else:
-    st.sidebar.error(f"❌ Pasta não encontrada:\n`{pasta_path}`")
-    # Tenta criar a pasta local caso seja a pasta padrão
-    if caminho_digitado == PASTA_PADRAO:
-        pasta_path.mkdir(parents=True, exist_ok=True)
-        st.sidebar.info("A pasta './dados' foi criada automaticamente no seu projeto.")
+    st.sidebar.error(f"❌ Pasta não encontrada:\n`{pasta_path.absolute()}`")
+    # Tenta criar a pasta local
+    pasta_path.mkdir(parents=True, exist_ok=True)
+    st.sidebar.info("📁 A pasta './dados' foi criada automaticamente no seu projeto.")
 
 # ---------------------------------------------------------
-# 2. DETECÇÃO DE ARQUIVOS EXCEL E CSV
+# DETECÇÃO DE ARQUIVOS EXCEL E CSV
 # ---------------------------------------------------------
 lista_arquivos = []
 
@@ -46,11 +41,10 @@ if pasta_path.exists():
     # Varre a pasta e subpastas procurando por extensão .xlsx, .xls ou .csv
     # Ignora arquivos temporários do Excel (que começam com ~$ )
     for arquivo in pasta_path.rglob("*"):
-        if arquivo.is_file() and arquivo.suffix.lower() in [".xlsx", ".xls", ".csv"]:
-            if not arquivo.name.startswith("~$"):
-                # Guarda o caminho relativo para exibição amigável
-                caminho_relativo = arquivo.relative_to(pasta_path)
-                lista_arquivos.append((str(caminho_relativo), arquivo))
+        if arquivo.is_file() and arquivo.suffix.lower() in [".xlsx", ".xls", ".csv", ".xlsm"] and not arquivo.name.startswith("~$"):
+            # Adiciona o arquivo à lista com o caminho relativo
+            caminho_relativo = arquivo.relative_to(pasta_path)
+            lista_arquivos.append((str(caminho_relativo), arquivo))
 
 st.sidebar.markdown("---")
 st.sidebar.header("📁 Seleção de Arquivo")
@@ -67,14 +61,14 @@ if lista_arquivos:
     caminho_arquivo_real = dict(lista_arquivos)[arquivo_escolhido_rel]
 
     # ---------------------------------------------------------
-    # 3. LEITURA DO ARQUIVO (EXCEL OU CSV) E NAVEGAÇÃO
+    # LEITURA DO ARQUIVO (EXCEL OU CSV) E NAVEGAÇÃO
     # ---------------------------------------------------------
     df = None
     extensao = caminho_arquivo_real.suffix.lower()
 
     try:
         # Se for Excel, permite escolher qual Aba (Sheet) abrir
-        if extensao in [".xlsx", ".xls"]:
+        if extensao in [".xlsx", ".xls", ".xlsm"]:
             xls = pd.ExcelFile(caminho_arquivo_real)
             sheet_names = xls.sheet_names
             
@@ -93,7 +87,7 @@ if lista_arquivos:
             nome_exibicao = f"{arquivo_escolhido_rel} (Arquivo CSV)"
 
         # ---------------------------------------------------------
-        # 4. DASHBOARD AUTOMÁTICO
+        # DASHBOARD AUTOMÁTICO
         # ---------------------------------------------------------
         if df is not None:
             st.success(f"📊 **Arquivo Selecionado:** `{nome_exibicao}`")
@@ -124,6 +118,7 @@ if lista_arquivos:
 
                     df_grouped = df.groupby(eixo_x)[eixo_y].sum().reset_index().sort_values(by=eixo_y, ascending=False).head(10)
                     fig1 = px.bar(df_grouped, x=eixo_x, y=eixo_y, text=eixo_y, color=eixo_y, color_continuous_scale="Blues")
+                    fig1.update_traces(texttemplate='%{text:.2f}', textposition='outside')
                     st.plotly_chart(fig1, use_container_width=True)
                 else:
                     st.info("Para visualização em gráfico de barras, a planilha precisa de ao menos uma coluna de texto e uma numérica.")
@@ -136,7 +131,10 @@ if lista_arquivos:
 
                     df_pie = df.groupby(eixo_pizza)[valor_pizza].sum().reset_index()
                     fig2 = px.pie(df_pie, names=eixo_pizza, values=valor_pizza, hole=0.4)
+                    fig2.update_traces(textposition='inside', textinfo='percent+label')
                     st.plotly_chart(fig2, use_container_width=True)
+                else:
+                    st.info("Para visualização em gráfico de pizza, a planilha precisa de ao menos uma coluna de texto e uma numérica.")
 
             st.markdown("---")
 
@@ -145,8 +143,8 @@ if lista_arquivos:
             st.dataframe(df, use_container_width=True)
 
     except Exception as e:
-        st.error(f"Erro ao abrir o arquivo: {e}")
+        st.error(f"❌ Erro ao abrir o arquivo: {e}")
 
 else:
     st.warning("⚠️ Nenhum arquivo Excel (.xlsx, .xls) ou CSV foi localizado no diretório.")
-    st.info("💡 **Dica:** Copie o caminho exato da pasta onde seus arquivos estão salvos e cole na caixa de texto na barra lateral esquerda.")
+    st.info(f"💡 **Dica:** Coloque seus arquivos na pasta `{PASTA_DADOS}` para que apareçam aqui automaticamente.")
