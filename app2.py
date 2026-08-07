@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-PASTA_DADOS = "./Logistica-Reversa"
+PASTA_DADOS = "./Bash do trabalho/Logistica Reversa"
 
 # Configuração da página
 st.set_page_config(
