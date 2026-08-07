@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from oletools.olevba import VBA_Parser
 import streamlit as st
 import pandas as pd
 import plotly.express as px
